@@ -28,6 +28,7 @@ func SetMapLength(l int) {
 	mapLength = l
 }
 
+// TODO - write doc
 func Do[T any]() T {
 	var t T
 	if reflect.TypeOf(t) == nil {
