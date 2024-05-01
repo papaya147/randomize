@@ -66,6 +66,6 @@ func main() {
 
 	g := randomize.Do[[4]uint8]()
 	fmt.Println(g)
-    // [55 187 78 179]
+	// [55 187 78 179]
 }
 ```
