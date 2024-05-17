@@ -1,6 +1,7 @@
 package randomize
 
 import (
+	"fmt"
 	"math/rand"
 	"reflect"
 	"time"
@@ -29,13 +30,22 @@ func SetMapLength(l int) {
 }
 
 // TODO - write doc
-func Do[T any]() T {
+func Do[T any]() (T, error) {
 	var t T
-	if reflect.TypeOf(t) == nil {
-		return t
+	typ := reflect.TypeOf(t)
+	if typ == nil {
+		return t, nil
 	}
 
-	switch reflect.TypeOf(t).Kind() {
+	if randomizer, ok := customRandomizers[typ]; ok {
+		return randomizer().Interface().(T), nil
+	}
+
+	if typ.String() != typ.Kind().String() && isBaseType(typ.Kind()) {
+		return t, fmt.Errorf("%s does not have a custom mapping, but may have enumerated types", typ.String())
+	}
+
+	switch typ.Kind() {
 	case reflect.Func, reflect.Uintptr, reflect.UnsafePointer:
 		panic("types: func, uintptr, unsafe pointer are unsupported")
 	case reflect.Bool,
@@ -43,19 +53,19 @@ func Do[T any]() T {
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
 		reflect.Float32, reflect.Float64,
 		reflect.String:
-		return randomize(reflect.TypeOf(t)).Interface().(T)
+		return randomize(reflect.TypeOf(t)).Interface().(T), nil
 	case reflect.Slice:
-		return randomSliceFromGeneric[T]()
+		return randomSliceFromGeneric[T](), nil
 	case reflect.Array:
-		return randomArrayFromGeneric[T]()
+		return randomArrayFromGeneric[T](), nil
 	case reflect.Struct:
-		return randomStructFromGeneric[T]()
+		return randomStructFromGeneric[T](), nil
 	case reflect.Pointer:
-		return randomPointerFromGeneric[T]()
+		return randomPointerFromGeneric[T](), nil
 	case reflect.Map:
-		return randomMapFromGeneric[T]()
+		return randomMapFromGeneric[T](), nil
 	default:
-		return t
+		return t, nil
 	}
 }
 
@@ -101,6 +111,7 @@ func randomize(t reflect.Type) reflect.Value {
 		return randomPointerFromReflectType(t)
 	case reflect.Map:
 		return randomMapFromReflectType(t)
+	default:
+		return reflect.ValueOf(t)
 	}
-	return reflect.ValueOf(t)
 }

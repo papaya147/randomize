@@ -18,15 +18,35 @@ type TestStruct1 struct {
 	Field4 [5]bool
 }
 
-func TestRandomize(t *testing.T) {
-	a := Do[string]()
+type StudentDegree string
+
+const (
+	StudentDegreeBachelors StudentDegree = "bachelors"
+	StudentDegreeMasters   StudentDegree = "masters"
+	StudentDegreeDoctorate StudentDegree = "doctorate"
+)
+
+func randomStudentDegree() StudentDegree {
+	degrees := []StudentDegree{
+		StudentDegreeBachelors,
+		StudentDegreeMasters,
+		StudentDegreeDoctorate,
+	}
+	return degrees[r.Intn(len(degrees))]
+}
+
+func TestDo(t *testing.T) {
+	a, err := Do[string]()
+	require.NoError(t, err)
 	require.NotZero(t, a)
 	require.IsType(t, string(""), a)
 
-	b := Do[bool]()
+	b, err := Do[bool]()
+	require.NoError(t, err)
 	require.IsType(t, bool(true), b)
 
-	c := Do[[][4]string]()
+	c, err := Do[[][4]string]()
+	require.NoError(t, err)
 	require.NotZero(t, c)
 	require.Len(t, c, sliceLength)
 	for _, e := range c {
@@ -39,11 +59,13 @@ func TestRandomize(t *testing.T) {
 		}
 	}
 
-	d := Do[TestStruct1]()
+	d, err := Do[TestStruct1]()
+	require.NoError(t, err)
 	require.NotZero(t, d)
 	require.IsType(t, TestStruct1{}, d)
 
-	e := Do[[]*string]()
+	e, err := Do[[]*string]()
+	require.NoError(t, err)
 	require.NotZero(t, e)
 	require.Len(t, e, sliceLength)
 	for _, f := range e {
@@ -52,7 +74,8 @@ func TestRandomize(t *testing.T) {
 		require.IsType(t, string(""), *f)
 	}
 
-	f := Do[map[string]string]()
+	f, err := Do[map[string]string]()
+	require.NoError(t, err)
 	require.NotZero(t, f)
 	require.Len(t, f, mapLength)
 	for k, v := range f {
@@ -62,10 +85,19 @@ func TestRandomize(t *testing.T) {
 		require.IsType(t, string(""), v)
 	}
 
-	g := Do[uuid.UUID]()
+	g, err := Do[uuid.UUID]()
+	require.NoError(t, err)
 	require.NotZero(t, g)
 	require.IsType(t, uuid.UUID{}, g)
 
-	h := Do[interface{}]()
+	h, err := Do[interface{}]()
+	require.NoError(t, err)
 	require.Nil(t, h)
+
+	RegisterCustomRandomizer[StudentDegree](randomStudentDegree)
+	i, err := Do[StudentDegree]()
+	require.NoError(t, err)
+	require.NotZero(t, i)
+	require.IsType(t, StudentDegree(""), i)
+	require.Contains(t, []StudentDegree{StudentDegreeBachelors, StudentDegreeMasters, StudentDegreeDoctorate}, i)
 }
