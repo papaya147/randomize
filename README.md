@@ -4,7 +4,7 @@ A Go package to generate random values from input types
 
 ### Getting Started
 
-`go get github.com/papaya147/randomize@v0.1.1`
+`go get github.com/papaya147/randomize@v0.1.2`
 
 ### Unsupported Types
 
