@@ -8,18 +8,22 @@ import (
 )
 
 func TestRandomPointerFromGeneric(t *testing.T) {
-	a := randomPointerFromGeneric[*int]()
+	a, err := randomPointerFromGeneric[*int]()
+	require.NoError(t, err)
 	require.IsType(t, int(0), *a)
 
-	b := randomPointerFromGeneric[*TestStruct1]()
+	b, err := randomPointerFromGeneric[*TestStruct1]()
+	require.NoError(t, err)
 	require.IsType(t, TestStruct1{}, *b)
 
-	c := randomPointerFromGeneric[*[]string]()
+	c, err := randomPointerFromGeneric[*[]string]()
+	require.NoError(t, err)
 	require.IsType(t, []string{}, *c)
 }
 
 func TestRandomPointerFromReflectType(t *testing.T) {
 	var x *int
-	a := randomPointerFromReflectType(reflect.TypeOf(x))
+	a, err := randomPointerFromReflectType(reflect.TypeOf(x))
+	require.NoError(t, err)
 	require.IsType(t, x, a.Interface())
 }

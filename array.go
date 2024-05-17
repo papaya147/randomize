@@ -2,16 +2,23 @@ package randomize
 
 import "reflect"
 
-func randomArrayFromGeneric[T any]() T {
+func randomArrayFromGeneric[T any]() (T, error) {
 	var t T
-	return randomArrayFromReflectType(reflect.TypeOf(t)).Interface().(T)
+	randomArray, err := randomArrayFromReflectType(reflect.TypeOf(t))
+	if err != nil {
+		return t, err
+	}
+	return randomArray.Interface().(T), nil
 }
 
-func randomArrayFromReflectType(t reflect.Type) reflect.Value {
+func randomArrayFromReflectType(t reflect.Type) (reflect.Value, error) {
 	newArray := reflect.New(t).Elem()
 	for i := 0; i < newArray.Len(); i++ {
-		value := randomize(t.Elem())
+		value, err := randomize(t.Elem())
+		if err != nil {
+			return reflect.Value{}, nil
+		}
 		newArray.Index(i).Set(value)
 	}
-	return newArray
+	return newArray, nil
 }

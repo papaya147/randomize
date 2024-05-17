@@ -4,14 +4,22 @@ import (
 	"reflect"
 )
 
-func randomPointerFromGeneric[T any]() T {
+func randomPointerFromGeneric[T any]() (T, error) {
 	var t T
-	return randomPointerFromReflectType(reflect.TypeOf(t)).Interface().(T)
+	randomPointer, err := randomPointerFromReflectType(reflect.TypeOf(t))
+	if err != nil {
+		return t, err
+	}
+	return randomPointer.Interface().(T), nil
 }
 
-func randomPointerFromReflectType(t reflect.Type) reflect.Value {
+func randomPointerFromReflectType(t reflect.Type) (reflect.Value, error) {
 	newPointer := reflect.New(t.Elem())
 	elem := newPointer.Elem()
-	elem.Set(randomize(elem.Type()))
-	return newPointer
+	value, err := randomize(elem.Type())
+	if err != nil {
+		return reflect.Value{}, err
+	}
+	elem.Set(value)
+	return newPointer, nil
 }

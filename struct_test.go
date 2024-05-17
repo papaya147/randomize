@@ -19,15 +19,18 @@ type TestStructWrapper struct {
 }
 
 func TestRandomStructFromGeneric(t *testing.T) {
-	a := randomStructFromGeneric[TestStruct]()
+	a, err := randomStructFromGeneric[TestStruct]()
+	require.NoError(t, err)
 	require.IsType(t, TestStruct{}, a)
 
-	b := randomStructFromGeneric[TestStructWrapper]()
+	b, err := randomStructFromGeneric[TestStructWrapper]()
+	require.NoError(t, err)
 	require.IsType(t, TestStructWrapper{}, b)
 }
 
 func TestRandomStructFromReflectType(t *testing.T) {
 	x := TestStruct{}
-	a := randomStructFromReflectType(reflect.TypeOf(x))
+	a, err := randomStructFromReflectType(reflect.TypeOf(x))
+	require.NoError(t, err)
 	require.IsType(t, x, a.Interface())
 }
