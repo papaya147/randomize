@@ -88,7 +88,7 @@ func main() {
 	fmt.Println(f)
 	// map[tzjrnumodm:101 unjyttnfhm:-88 vlycruzfue:-118]
 
-	g, _:= randomize.Do[[4]uint8]()
+	g, _ := randomize.Do[[4]uint8]()
 	fmt.Println(g)
 	// [55 187 78 179]
 
@@ -97,7 +97,7 @@ func main() {
 	h, err := randomize.Do[StudentDegree]()
 	if err != nil {
 		panic(err)
-    }
+	}
 	fmt.Println(h)
 	// bachelors
 }
