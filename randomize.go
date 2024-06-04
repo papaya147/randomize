@@ -12,6 +12,23 @@ var r *rand.Rand
 
 func init() {
 	r = rand.New(rand.NewSource(time.Now().UnixMilli()))
+	RegisterCustomRandomizer(func() time.Month {
+		args := []time.Month{
+			time.January,
+			time.February,
+			time.March,
+			time.April,
+			time.May,
+			time.June,
+			time.July,
+			time.August,
+			time.September,
+			time.October,
+			time.November,
+			time.December,
+		}
+		return args[r.Intn(len(args))]
+	})
 }
 
 var sliceLength int = 5
@@ -136,6 +153,6 @@ func randomize(t reflect.Type) (reflect.Value, error) {
 }
 
 func randomTime() reflect.Value {
-	randVal := r.Uint64()
-	return reflect.ValueOf(time.Unix(int64(randVal/1000), int64(randVal%1000)))
+	t := time.Date(r.Intn(9000)+1000, time.Month(r.Intn(12)), r.Intn(28)+1, r.Intn(24), r.Intn(60), r.Intn(60), 0, time.UTC)
+	return reflect.ValueOf(t)
 }
