@@ -2,6 +2,7 @@ package randomize
 
 import (
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -100,4 +101,8 @@ func TestDo(t *testing.T) {
 	require.NotZero(t, i)
 	require.IsType(t, StudentDegree(""), i)
 	require.Contains(t, []StudentDegree{StudentDegreeBachelors, StudentDegreeMasters, StudentDegreeDoctorate}, i)
+
+	j, err := Do[time.Time]()
+	require.NoError(t, err)
+	require.NotZero(t, j)
 }

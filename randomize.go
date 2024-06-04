@@ -64,6 +64,9 @@ func Do[T any]() (T, error) {
 	case reflect.Array:
 		return randomArrayFromGeneric[T]()
 	case reflect.Struct:
+		if typ == reflect.TypeOf(time.Time{}) {
+			return randomTime().Interface().(T), nil
+		}
 		return randomStructFromGeneric[T]()
 	case reflect.Pointer:
 		return randomPointerFromGeneric[T]()
@@ -119,6 +122,9 @@ func randomize(t reflect.Type) (reflect.Value, error) {
 	case reflect.String:
 		return reflect.ValueOf(randomString(stringLength)), nil
 	case reflect.Struct:
+		if t == reflect.TypeOf(time.Time{}) {
+			return randomTime(), nil
+		}
 		return randomStructFromReflectType(t)
 	case reflect.Pointer:
 		return randomPointerFromReflectType(t)
@@ -127,4 +133,9 @@ func randomize(t reflect.Type) (reflect.Value, error) {
 	default:
 		return reflect.ValueOf(t), nil
 	}
+}
+
+func randomTime() reflect.Value {
+	randVal := r.Uint64()
+	return reflect.ValueOf(time.Unix(int64(randVal/1000), int64(randVal%1000)))
 }
