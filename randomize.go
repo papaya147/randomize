@@ -47,7 +47,16 @@ func SetMapLength(l int) {
 	mapLength = l
 }
 
-// TODO - write doc
+// Must calls Do and panics if an error is returned
+func Must[T any]() T {
+	out, err := Do[T]()
+	if err != nil {
+		panic(err)
+	}
+	return out
+}
+
+// Do returns a random variable of the type T
 func Do[T any]() (T, error) {
 	var t T
 	typ := reflect.TypeOf(t)
