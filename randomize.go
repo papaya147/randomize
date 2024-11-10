@@ -3,6 +3,7 @@ package randomize
 import (
 	"errors"
 	"fmt"
+	"github.com/shopspring/decimal"
 	"math/rand"
 	"reflect"
 	"time"
@@ -93,6 +94,9 @@ func Do[T any]() (T, error) {
 		if typ == reflect.TypeOf(time.Time{}) {
 			return randomTime().Interface().(T), nil
 		}
+		if typ == reflect.TypeOf(decimal.Decimal{}) {
+			return randomDecimal().Interface().(T), nil
+		}
 		return randomStructFromGeneric[T]()
 	case reflect.Pointer:
 		return randomPointerFromGeneric[T]()
@@ -151,6 +155,9 @@ func randomize(t reflect.Type) (reflect.Value, error) {
 		if t == reflect.TypeOf(time.Time{}) {
 			return randomTime(), nil
 		}
+		if t == reflect.TypeOf(decimal.Decimal{}) {
+			return randomDecimal(), nil
+		}
 		return randomStructFromReflectType(t)
 	case reflect.Pointer:
 		return randomPointerFromReflectType(t)
@@ -164,4 +171,9 @@ func randomize(t reflect.Type) (reflect.Value, error) {
 func randomTime() reflect.Value {
 	t := time.Date(r.Intn(9000)+1000, time.Month(r.Intn(12)), r.Intn(28)+1, r.Intn(24), r.Intn(60), r.Intn(60), 0, time.UTC)
 	return reflect.ValueOf(t)
+}
+
+func randomDecimal() reflect.Value {
+	d := decimal.NewFromFloat(Must[float64]())
+	return reflect.ValueOf(d)
 }
